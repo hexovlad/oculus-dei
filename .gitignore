@@ -1,0 +1,38 @@
+# IntelliJ project files
+.idea/
+
+# Compiled Python bytecode
+*.pyc
+__pycache__/
+
+# Virtual environment
+venv/
+env/
+
+# Compiled Rust artifacts
+target/
+
+# Docker
+docker-compose.yml
+docker-compose.override.yml
+docker-compose.override.yml.sample
+Dockerfile
+
+# MongoDB
+data/
+dbpath
+mongod.lock
+mongod.pid
+
+# Logs
+*.log
+
+# macOS specific files
+.DS_Store
+
+# Editor-specific files
+.vscode/
+*.sublime-*
+*.swp
+*.swo
+*.idea
