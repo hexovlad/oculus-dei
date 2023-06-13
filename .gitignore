@@ -18,6 +18,7 @@ docker-compose.override.yml
 docker-compose.override.yml.sample
 Dockerfile
 
+
 # MongoDB
 data/
 dbpath
@@ -36,3 +37,7 @@ mongod.pid
 *.swp
 *.swo
 *.idea
+
+# Config files
+config.yml
+config.yaml
