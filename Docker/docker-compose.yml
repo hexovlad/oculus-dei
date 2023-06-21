@@ -1,0 +1,69 @@
+version: '3'
+
+# Networks
+networks:
+  internal_net:  # The network shouldn't have access to Internet by default
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.16.0.0/24
+
+  open_net:  # TODO: Add in the documentation and Makefile creation for the Docker networks
+    external: true
+
+# Services
+services:
+  oculus-dei:  # Running the application itself
+    image: oculus-dei:latest
+    depends_on:
+      - mongo
+    #    restart: always
+    volumes:
+      - ./:/app
+      - ./test_config.yml:/app/test_config.yml
+    working_dir: /app
+    command: python main.py
+    networks:
+      internal_net:
+        ipv4_address: 172.16.0.4
+      open_net:
+
+  mongo:  # Starting the database
+    image: mongo:4.2.24
+    restart: always
+    volumes:
+      - ./db:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_DB_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_DB_PASS}
+    ports:
+      - ${MONGO_DB_PORT_INBOUND}:${MONGO_DB_PORT_OUTBOUND}
+    networks:
+      internal_net:
+        ipv4_address: 172.16.0.2
+
+  mongo-express:  # Starting the web interface for mongo
+    image: mongo-express:0.54.0
+    depends_on:
+      - mongo
+    restart: always
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: ${MONGO_DB_USER}
+      ME_CONFIG_MONGODB_ADMINPASSWORD: ${MONGO_DB_PASS}
+    ports:
+      - ${MONGO_EXPRESS_PORT}:${MONGO_EXPRESS_PORT}
+    networks:
+      internal_net:
+        ipv4_address: 172.16.0.3
+
+  # ========== TESTING ==========
+#  oculus-dei-tests:  # Running the unit tests for the code
+#    image: oculusdei-tests:latest
+#    volumes:
+#      - ./:/app
+#      - ./test_config.yml:/app/test_config.yml
+#    working_dir: /app
+#    command:
+#      bash -c "python3 -m unittest discover -s <test_folder> -p '*_test.py' &&
+#      python3 -m unittest discover -s <test_folder> -p '*_test.py' &&
+#      python3 -m unittest discover -s <test_folder> -p '*_test.py'
