@@ -32,7 +32,7 @@ services:
     image: mongo:4.2.24
     restart: always
     volumes:
-      - ./db:/data/db
+      - ./MongoDB/:/data/db
     environment:
       MONGO_INITDB_ROOT_USERNAME: ${MONGO_DB_USER}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_DB_PASS}
