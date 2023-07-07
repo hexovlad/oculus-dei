@@ -14,6 +14,9 @@ DOCKER_TAG := docker tag
 # Docker push command
 DOCKER_PUSH := docker push
 
+# Location for the venv
+VENV_PATH :=
+
 # Build the Docker image
 .PHONY: build
 build:
