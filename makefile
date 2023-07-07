@@ -41,3 +41,7 @@ clean:
 	@echo "Cleaning up Docker images and containers..."
 	docker container prune -f
 	docker image prune -f
+
+.PHONY: install
+install:
+	@echo "Installing the application"
