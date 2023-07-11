@@ -118,7 +118,7 @@ class DatabaseActions:
 
         return None  # Returning None in case there is no information found in the database
 
-    def data_get_many(self, collection: str, query: dict) -> dict or None:
+    def data_get_many(self, collection: str, query: dict) -> dict or list or None:
         """Getting data based on a query"""
         try:
             db_collection = self.db_connector.db[collection]
