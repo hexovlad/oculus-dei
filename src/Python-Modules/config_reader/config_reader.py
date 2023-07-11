@@ -12,7 +12,7 @@ class ConfigReader:
     @staticmethod
     def _config_file_reader(config_path: str):
         """Returns the object for interacting with the config file"""
-
+        yaml_data = None
         try:
             with open(config_path, 'r') as file:
                 try:
@@ -26,20 +26,22 @@ class ConfigReader:
         except Exception as e:
             print(f"An error occurred: {e}")
 
-    def find_field_value(self, data, field) -> int or str or list or None:
+        return yaml_data
+
+    def find_value(self, yaml_data, field) -> int or str or list or None:
         """Returning the data found on a given field in the config file"""
 
-        if isinstance(data, dict):
-            for key, value in data.items():
+        if isinstance(yaml_data, dict):
+            for key, value in yaml_data.items():
                 if key == field:
                     return value
                 elif isinstance(value, (dict, list)):
-                    result = self.find_field_value(value, field)
+                    result = self.find_value(value, field)
                     if result is not None:
                         return result
-        elif isinstance(data, list):
-            for item in data:
-                result = self.find_field_value(item, field)
+        elif isinstance(yaml_data, list):
+            for item in yaml_data:
+                result = self.find_value(item, field)
                 if result is not None:
                     return result
 
