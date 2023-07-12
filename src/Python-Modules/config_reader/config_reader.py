@@ -45,4 +45,4 @@ class ConfigReader:
                 if result is not None:
                     return result
 
-        return None
+        return None  # Restringing None in case there is no value found
