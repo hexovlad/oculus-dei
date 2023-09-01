@@ -14,7 +14,7 @@ class ConfigReader:
         """Returns the object for interacting with the config file"""
         yaml_data = None
         try:
-            with open(config_path, 'r') as file:
+            with open(config_path, "r") as file:
                 try:
                     yaml_data = yaml.safe_load(file)
                 except yaml.YAMLError as e:
@@ -28,8 +28,9 @@ class ConfigReader:
 
         return yaml_data
 
-    def find_value(self, yaml_data, field) -> int or str or list or None:
+    def find_value(self, field) -> int or str or list or None:
         """Returning the data found on a given field in the config file"""
+        yaml_data = self._config_reader
 
         if isinstance(yaml_data, dict):
             for key, value in yaml_data.items():
