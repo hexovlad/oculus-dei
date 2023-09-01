@@ -11,7 +11,7 @@ class MyTestCase(unittest.TestCase):
 
     def test_read_mongo_username(self):
         """Testing reading mongo username"""
-        username = self.config_reader.find_value("mongoDB_unsername")
+        username = self.config_reader.find_value("mongoDB_username")
 
         self.assertEqual(username, "Username")
 
