@@ -28,6 +28,20 @@ services:
         ipv4_address: 172.16.0.4
       open_net:
 
+  mongo-express:  # Starting the web interface for mongo
+    image: mongo-express:0.54.0
+    depends_on:
+      - mongo
+    restart: always
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: ${MONGO_DB_USER}
+      ME_CONFIG_MONGODB_ADMINPASSWORD: ${MONGO_DB_PASS}
+    ports:
+      - ${MONGO_EXPRESS_PORT}:${MONGO_EXPRESS_PORT}
+    networks:
+      internal_net:
+        ipv4_address: 172.16.0.3
+
   mongo:  # Starting the database
     image: mongo:4.2.24
     restart: always
@@ -42,19 +56,6 @@ services:
       internal_net:
         ipv4_address: 172.16.0.2
 
-  mongo-express:  # Starting the web interface for mongo
-    image: mongo-express:0.54.0
-    depends_on:
-      - mongo
-    restart: always
-    environment:
-      ME_CONFIG_MONGODB_ADMINUSERNAME: ${MONGO_DB_USER}
-      ME_CONFIG_MONGODB_ADMINPASSWORD: ${MONGO_DB_PASS}
-    ports:
-      - ${MONGO_EXPRESS_PORT}:${MONGO_EXPRESS_PORT}
-    networks:
-      internal_net:
-        ipv4_address: 172.16.0.3
 
   # ========== TESTING ==========
 #  oculus-dei-tests:  # Running the unit tests for the code
