@@ -1,0 +1,23 @@
+accessTokens:  # Access tokens
+  nvdKey: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+
+accessCredentials:  # Credentials
+  mongoDB:          # Credentials for mongoDB
+    mongoDB_password: "Password"
+    mongoDB_username: "Username"
+    mongoDB_auth_db: "Admin"
+
+  mongoDB-Express:  # Credentials for mongoDB Expess
+    mongoDB-Express_username: "Username"
+    mongoDB-Express_password: "Password"
+
+deploymentParameters:  # Parameters for deployment
+  mongoDB:  # Deployment parameters for mongoDB
+    mongoDB_ports: 27017
+    mongoDB_IP: 172.16.0.2
+    mongodbDatabaseNameIntelligence: "Intelligence"
+    mongodbDatabaseNameUtility: "Utility"
+
+  mongoDB-Express:
+    mongoDB-Express_IP: 172.16.0.3
+    mongoDB-Express_Port: 8080
