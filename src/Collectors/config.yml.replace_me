@@ -1,0 +1,17 @@
+# !!! REMEMBER TO THE VALUES TO YOUR OWN WHEN DEPLOYING THE APP !!!
+
+accessTokens:  # Access tokens
+
+accessCredentials:  # Credentials
+  mongoDB:          # Credentials for mongoDB
+    mongoDB_password: "Password"
+    mongoDB_username: "Username"
+    mongoDB_auth_db: "Admin"
+
+  mongoDB-Express:  # Credentials for mongoDB Expess
+    mongoDB-Express_username: "Username"
+    mongoDB-Express_password: "Password"
+
+deploymentParameters:  # Parameters for deployment
+  mongoDB:  # Deployment parameters for mongoDB
+    mongoDB_ports: 27017
