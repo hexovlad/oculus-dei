@@ -21,6 +21,9 @@ jobs:
       - name: Install dependencies
         run: pip install -r src/requirements.txt  # For now the requirements.txt file is in the "src" directrory
 
+      - name: Install Black  # Installing black
+        run: pip install black
+
       # - name: Run unit tests
       #  run: python -m unittest discover  # Will have to adjust this command
 
