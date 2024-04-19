@@ -1,4 +1,4 @@
-name: Merge to Master on Success
+name: Checking code lint
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
       - dev/master  # Only doing this if the code is pushed to dev/master
 
 jobs:
-  merge_to_master:
+  check_linter:
     runs-on: ubuntu-latest
 
     steps:
@@ -26,4 +26,3 @@ jobs:
 
       - name: Check code formatting with Black
         run: black --check --diff src  # Checking the codebase with linter
-
