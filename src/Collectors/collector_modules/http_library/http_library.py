@@ -27,8 +27,6 @@ class HttpRequest:
 
             case "connect":
                 payload = (
-                    f"grant_type=client_credentials&client_id=SecurityServicesClient&client_secret={secret}&scope"
-                    f"=VismaHubble.ApplicationManagement.API%3AgeneralRead"
                 )
                 return payload
 
