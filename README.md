@@ -7,7 +7,7 @@
 
 An application for managing and monitoring attack surfaces. The main purpose is to create an application which is more or less plug and play for
 non-technical people and allows organizations to manage and monitor their attack surface while also sharing information with other
-applications such as _SIEM_ or _SOAR_.
+applications.
 
 The documentation should cover how to _install_, _use_ and _contribute_ to the project.
 
