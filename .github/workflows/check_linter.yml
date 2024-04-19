@@ -19,11 +19,11 @@ jobs:
           python-version: "3.10" # Setting the python version to 3.10
 
       - name: Install dependencies
-        run: pip install -r src/requirements.txt  # For now the requirements.txt file is in the "src" directrory
+        run: pip install -r src/requirements.txt  # For now the requirements.txt file is in the "src" directory
 
       - name: Install Black  # Installing black
         run: pip install black
 
       - name: Check code formatting with Black
-        run: black --check src/Collectors  # Adjust this command based on your codebase
+        run: black --check --diff src  # Checking the codebased with linter
 
