@@ -25,5 +25,5 @@ jobs:
         run: pip install black
 
       - name: Check code formatting with Black
-        run: black --check --diff src  # Checking the codebased with linter
+        run: black --check --diff src  # Checking the codebase with linter
 
