@@ -24,12 +24,6 @@ jobs:
       - name: Install Black  # Installing black
         run: pip install black
 
-      # - name: Run unit tests
-      #  run: python -m unittest discover  # Will have to adjust this command
-
       - name: Check code formatting with Black
         run: black --check src/Collectors  # Adjust this command based on your codebase
 
-      - name: Merge to Master on Success
-        if: success()  # Only proceed if the previous steps were successful
-        run: |
