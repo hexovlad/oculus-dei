@@ -1,70 +1,98 @@
-version: '3'
+version: '3.7'
 
-# Networks
 networks:
-  internal_net:  # The network shouldn't have access to Internet by default
-    driver: bridge
+  app_internal: # Only internal network
+    internal: true
     ipam:
       config:
-        - subnet: 172.16.0.0/24
+        - subnet: 172.20.0.0/24
 
-  open_net:  # TODO: Add in the documentation and Makefile creation for the Docker networks
+  mongo_internal: # Internal network for the mongo connections
+    internal: true
+    ipam:
+      config:
+        - subnet: 172.21.0.0/24
+
+  app_external: # Has access to external network
     external: true
+
+  mongo_express_interface:  # Default network for Mongo Express
+
+volumes:
+  mongo_data: # Defines a volume for MongoDB data persistence
+    driver_opts:
+      type: 'none'
+      device: '/var/lib/docker/volumes/mongo_data/_data'  # Specify your local path. Ensure this path exists and is owned by MongoDB user
+      o: 'bind,context="system_u:object_r:svirt_sandbox_file_t:s0"'  # Bind mount the volume with an appropriate SELinux context
+    name: mongo_data
 
 # Services
 services:
-  oculus-dei:  # Running the application itself
-    image: oculus-dei:latest
+  app:
+    image: oculus-dei:latest  # Ensure this image is built from your Dockerfile or available in a registry
+    read_only: true  # Setting the fs to read only
+    user: "1001"  # Using the predefined user
+    build:
+      context: .               # Context directory for Docker build
+      dockerfile: docker/app/Dockerfile  # Dockerfile path
+    depends_on:
+      - mongo                      # Ensures MongoDB starts before your application
+    environment:
+      - MONGO_URI=${MONGO_URI}
+    networks:
+      app_internal:             # Connects the app to the mongodb
+      app_external:             # Allows external connection to the app (The RF API for eg.)
+
+    security_opt:
+      - no-new-privileges:true  # Prevents the container from gaining new privileges
+      # Applying SELinux security contexts
+      - label:type:container_t  # Specifying SELinux type for the container
+      - label:level:s0:c123,c456  # Specifying MCS level for SELinux
+
+  # MongoDB Service
+  mongo:
+    image: mongo:8.0.0-rc9-jammy
+    user: "999"  # Using the predefined user
+    volumes:
+      - mongo_data:/data/db     # Persist MongoDB data on a Docker volume
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}  # MongoDB admin username (use secure credentials)
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}  # MongoDB admin password (use secure credentials)
+    ports:
+      - 27017:27017  # TODO: Remove when deploying to production
+    networks:
+      app_internal: # Connects the service to the custom network
+        ipv4_address: 172.20.0.2
+      mongo_internal:
+        ipv4_address: 172.21.0.2
+      mongo_express_interface:  # TODO: Remove when deploying to production
+    security_opt:
+      - no-new-privileges:true  # Prevents the container from gaining new privileges
+
+  # Web interface for MongoDB
+  mongo-express:
+    image: mongo-express:1.0-20-alpine3.19
+    read_only: true  # Setting the fs to read only
+    user: "1000"  # Using the predefined user
     depends_on:
       - mongo
-    #    restart: always
-    volumes:
-      - ./:/app
-      - ./test_config.yml:/app/test_config.yml
-    working_dir: /app
-    command: python main.py
-    networks:
-      internal_net:
-        ipv4_address: 172.16.0.4
-      open_net:
-
-  mongo-express:  # Starting the web interface for mongo
-    image: mongo-express:0.54.0
-    depends_on:
-      - mongo
-    restart: always
-    environment:
-      ME_CONFIG_MONGODB_ADMINUSERNAME: ${MONGO_DB_USER}
-      ME_CONFIG_MONGODB_ADMINPASSWORD: ${MONGO_DB_PASS}
     ports:
-      - ${MONGO_EXPRESS_PORT}:${MONGO_EXPRESS_PORT}
-    networks:
-      internal_net:
-        ipv4_address: 172.16.0.3
-
-  mongo:  # Starting the database
-    image: mongo:4.2.24
-    restart: always
-    volumes:
-      - ./MongoDB/:/data/db
+      - 8081:8081
     environment:
-      MONGO_INITDB_ROOT_USERNAME: ${MONGO_DB_USER}
-      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_DB_PASS}
-    ports:
-      - ${MONGO_DB_PORT_INBOUND}:${MONGO_DB_PORT_OUTBOUND}
+      ME_CONFIG_MONGODB_ADMINUSERNAME: ${ME_CONFIG_MONGODB_ADMINUSERNAME}  # MongoDB
+      ME_CONFIG_MONGODB_ADMINPASSWORD: ${ME_CONFIG_MONGODB_ADMINPASSWORD}  # MongoDB
+      ME_CONFIG_BASICAUTH_USERNAME: ${ME_CONFIG_BASICAUTH_USERNAME}  # Web auth
+      ME_CONFIG_BASICAUTH_PASSWORD: ${ME_CONFIG_BASICAUTH_PASSWORD}  # Web auth
+      ME_CONFIG_MONGODB_URL: ${MONGO_URI_MONG_NET} # MongoDB connection URI
+      ME_CONFIG_MONGODB_ENABLE_ADMIN: "true"  # Enabling admin mode for stats
+
+    restart: always
     networks:
-      internal_net:
-        ipv4_address: 172.16.0.2
-
-
-  # ========== TESTING ==========
-#  oculus-dei-tests:  # Running the unit tests for the code
-#    image: oculusdei-tests:latest
-#    volumes:
-#      - ./:/app
-#      - ./test_config.yml:/app/test_config.yml
-#    working_dir: /app
-#    command:
-#      bash -c "python3 -m unittest discover -s <test_folder> -p '*_test.py' &&
-#      python3 -m unittest discover -s <test_folder> -p '*_test.py' &&
-#      python3 -m unittest discover -s <test_folder> -p '*_test.py'
+      mongo_internal:
+        ipv4_address: 172.21.0.3
+      mongo_express_interface:
+    security_opt:
+      - no-new-privileges:true  # No privilege escalation for Mongo Express
+      # SELinux security configurations
+      - label:type:container_t  # Mongo Express SELinux type
+      - label:level:s0:c123,c456  # Mongo Express MCS level for SELinux
